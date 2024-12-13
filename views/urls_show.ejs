@@ -13,6 +13,11 @@
     <h1>Details for URL:</h1>
     <p>Short URL ID: <%= id %></p>
     <p>Long URL: <%= longURL %></p>
+    <form method="POST" action="/urls/<%= shortURL %>">
+      <label for="longURL">Edit URL:</label>
+      <input type="text" id="longURL" name="longURL" value="<%= urlDatabase[shortURL].longURL %>">
+      <button type="submit">Update</button>
+    </form>    
     <a href="#">Create a New URL</a>
   </body>
 </html>
