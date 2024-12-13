@@ -1,4 +1,6 @@
 // express server code
+app.use(express.urlencoded({ extended: true }));
+
 const express = require("express");
 const app = express();
 const PORT = 8080; 
@@ -30,12 +32,47 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  const longURL = urlDatabase[id];
-  const templateVars = { id, longURL };
-  res.render("urls_show", templateVars);
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
+
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  if (longURL) {
+    res.redirect(longURL); 
+  } else {
+    res.status(404).send("Short URL not found.");
+  }
+});
+
+
+app.get("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  if (longURL) {
+    res.render("urls_show", { shortURL, longURL });
+  } else {
+    res.status(404).send("URL not found.");
+  }
+});
+
+if (!longURL) {
+  res.status(404).send("Short URL not found.");
+}
+
+
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL; 
+  res.redirect(`/urls/${shortURL}`); 
+});
+
+
+function generateRandomString() {
+  return Math.random().toString(36).substring(2, 8);
+}
 
 
 
