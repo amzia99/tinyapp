@@ -32,9 +32,12 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies["username"],
+  };
   res.render("urls_index", templateVars);
 });
+
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -65,6 +68,20 @@ if (!longURL) {
   res.status(404).send("Short URL not found.");
 }
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("login", templateVars);
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("register", templateVars);
+});
+
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -86,12 +103,16 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/login', (req, res) => {
+app.post("/login", (req, res) => {
   const { username } = req.body;
-  res.cookie('username', username); 
-  res.redirect('/urls');
+  res.cookie("username", username); 
+  res.redirect("/urls"); 
 });
 
+app.post("/logout", (req, res) => {
+  res.clearCookie("username"); 
+  res.redirect("/login");
+});
 
 
 function generateRandomString() {

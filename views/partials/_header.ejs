@@ -1,8 +1,15 @@
 <header>
-  <nav>
-    <form action="/login" method="POST" style="display: inline;">
-      <input type="text" name="username" placeholder="Username" required>
-      <button type="submit">Login</button>
+  <% if (username) { %>
+  <p>Logged in as: <%= username %></p>
+  <form action="/logout" method="POST">
+      <button type="submit">Logout</button>
     </form>
-  </nav>
+  <% } else { %>
+  <form action="/login" method="GET">
+  <button type="submit">Login</button>
+    </form>
+    <form action="/register" method="GET">
+      <button type="submit">Register</button>
+    </form>
+  <% } %>
 </header>
