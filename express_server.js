@@ -2,6 +2,10 @@
 const express = require("express");
 const app = express();
 
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+
 app.use(express.urlencoded({ extended: true }));
 const PORT = 8080; 
 
@@ -81,6 +85,13 @@ app.post('/urls/:id', (req, res) => {
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 });
+
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  res.cookie('username', username); 
+  res.redirect('/urls');
+});
+
 
 
 function generateRandomString() {
