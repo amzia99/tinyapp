@@ -1,15 +1,14 @@
 <header>
-<nav>
-    <ul>
-      <% if (user) { %>
-        
-        <li>Welcome, <strong><%= user.email %></strong>!</li>
-        <li><a href="/logout">Logout</a></li>
+  <nav>
+      <% if (!user) { %>
+          
+        <a href="/register">Register</a>
+        <a href="/login">Login</a>
       <% } else { %>
-        
-        <li><a href="/login">Login</a></li>
-        <li><a href="/register">Register</a></li>
+          
+          <form action="/logout" method="POST" style="display:inline;">
+              <button type="submit">Logout</button>
+          </form>
       <% } %>
-    </ul>
-</nav>
+  </nav>
 </header>
