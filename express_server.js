@@ -1,57 +1,46 @@
 // express server
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 
-app.use(cookieParser());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const users = {};
 
-const generateRandomString = () => {
-  return Math.random().toString(36).substring(2, 8);
+
+const getUserByEmail = (email, usersDb) => {
+  for (const userId in usersDb) {
+    if (usersDb[userId].email === email) {
+      return usersDb[userId];
+    }
+  }
+  return null;
 };
 
-app.get('/register', (req, res) => {
-  const templateVars = { user: null };
-  res.render('register', templateVars);
-});
 
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
 
+  
   if (!email || !password) {
-    return res.status(400).send('Email and password cannot be empty.');
+    return res.status(400).send('Error: Email or password cannot be empty.');
   }
 
-  for (let userId in users) {
-    if (users[userId].email === email) {
-      return res.status(400).send('Email already registered.');
-    }
+  
+  if (getUserByEmail(email, users)) {
+    return res.status(400).send('Error: Email already registered.');
   }
 
-  const userId = generateRandomString();
+  
+  const userId = `user_${Date.now()}`; 
   users[userId] = { id: userId, email, password };
 
-  res.cookie('user_id', userId);
-  res.redirect('/urls');
-});
-
-app.get('/urls', (req, res) => {
-  const userId = req.cookies['user_id'];
-  const user = users[userId];
-
-  const templateVars = { urls: {}, user };
-  res.render('urls_index', templateVars);
-});
-
-app.get('/logout', (req, res) => {
-  res.clearCookie('user_id');
-  res.redirect('/login');
+  console.log('Updated Users Object:', users); 
+  res.status(201).send('User registered successfully!');
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
