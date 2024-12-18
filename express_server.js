@@ -1,68 +1,74 @@
 // express server
 const express = require("express");
-const cookieSession = require("cookie-session");
-const { getUserByEmail } = require("./helpers");
-
 const app = express();
-const PORT = 8080;
+const cookieSession = require("cookie-session");
+const bodyParser = require("body-parser");
+const { urlsForUser } = require("./helpers");
 
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieSession({
-  name: 'session',
-  keys: ['secret-key']
-}));
-
-const users = {};
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieSession({ name: "session", keys: ["key1", "key2"] }));
 
 
-app.post("/login", (req, res) => {
-  const { email, password } = req.body;
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+};
 
-  if (!email || !password) {
-    return res.status(400).send("Error: Email and Password fields cannot be empty.");
+
+const users = {
+  aJ48lW: { id: "aJ48lW", email: "user@example.com", password: "password" },
+};
+
+
+const urlsForUser = (id) => {
+  const userURLs = {};
+  for (const urlID in urlDatabase) {
+    if (urlDatabase[urlID].userID === id) {
+      userURLs[urlID] = urlDatabase[urlID];
+    }
   }
+  return userURLs;
+};
 
-  const user = getUserByEmail(email, users);
-  if (!user) {
-    return res.status(403).send("Error: Email cannot be found.");
-  }
 
-  if (user.password !== password) {
-    return res.status(403).send("Error: Incorrect password.");
-  }
+app.get("/urls", (req, res) => {
+  const userID = req.session.user_id;
+  if (!userID) return res.status(403).send("Please log in first.");
+  const templateVars = { urls: urlsForUser(userID), user: users[userID] };
+  res.render("urls_index", templateVars);
+});
 
-  req.session.user_id = user.id;
+app.get("/urls/:id", (req, res) => {
+  const userID = req.session.user_id;
+  const urlEntry = urlDatabase[req.params.id];
+  if (!userID) return res.status(403).send("Please log in first.");
+  if (!urlEntry) return res.status(404).send("URL not found.");
+  if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
+  const templateVars = { id: req.params.id, longURL: urlEntry.longURL, user: users[userID] };
+  res.render("urls_show", templateVars);
+});
+
+app.post("/urls/:id", (req, res) => {
+  const userID = req.session.user_id;
+  const urlEntry = urlDatabase[req.params.id];
+  if (!userID) return res.status(403).send("Please log in first.");
+  if (!urlEntry) return res.status(404).send("URL not found.");
+  if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
+  urlEntry.longURL = req.body.longURL;
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  const userID = req.session.user_id;
+  const urlEntry = urlDatabase[req.params.id];
+  if (!userID) return res.status(403).send("Please log in first.");
+  if (!urlEntry) return res.status(404).send("URL not found.");
+  if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
 
-app.post("/logout", (req, res) => {
-  req.session = null; 
-  res.redirect("/login");
+app.listen(8080, () => {
+  console.log("Server listening on port 8080!");
 });
-
-
-app.post("/register", (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).send("Error: Email and Password fields cannot be empty.");
-  }
-
-  if (getUserByEmail(email, users)) {
-    return res.status(400).send("Error: Email already registered.");
-  }
-
-  const userId = `user${Math.random().toString(36).substring(2, 8)}`;
-  users[userId] = { id: userId, email, password };
-
-  req.session.user_id = userId;
-  res.redirect("/urls");
-});
-
-
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
-
-
