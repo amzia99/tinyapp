@@ -3,9 +3,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+const { getUserByEmail } = require("./helpers");
 
 const app = express();
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -15,7 +15,6 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000, 
   })
 );
-
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
@@ -30,7 +29,6 @@ const users = {
   },
 };
 
-
 const urlsForUser = (id) => {
   const userURLs = {};
   for (const urlID in urlDatabase) {
@@ -41,23 +39,12 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
-const findUserByEmail = (email) => {
-  for (const userID in users) {
-    if (users[userID].email === email) {
-      return users[userID];
-    }
-  }
-  return null;
-};
-
-
 const requireLogin = (req, res, next) => {
   if (!req.session.user_id) {
     return res.status(403).send("Please log in first.");
   }
   next();
 };
-
 
 app.get("/urls", requireLogin, (req, res) => {
   const userID = req.session.user_id;
@@ -72,7 +59,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send("Email and password cannot be blank!");
   }
 
-  if (findUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send("A user with this email already exists!");
   }
 
@@ -89,10 +76,9 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = findUserByEmail(email);
+  const user = getUserByEmail(email, users);
 
   if (!user) {
     return res.status(403).send("No user with that email found!");
@@ -106,12 +92,10 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
 });
-
 
 app.get("/urls/:id", requireLogin, (req, res) => {
   const userID = req.session.user_id;
@@ -122,7 +106,6 @@ app.get("/urls/:id", requireLogin, (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
 app.post("/urls/:id", requireLogin, (req, res) => {
   const userID = req.session.user_id;
   const urlEntry = urlDatabase[req.params.id];
@@ -132,7 +115,6 @@ app.post("/urls/:id", requireLogin, (req, res) => {
   res.redirect("/urls");
 });
 
-
 app.post("/urls/:id/delete", requireLogin, (req, res) => {
   const userID = req.session.user_id;
   const urlEntry = urlDatabase[req.params.id];
@@ -141,7 +123,6 @@ app.post("/urls/:id/delete", requireLogin, (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
-
 
 const PORT = 8080;
 app.listen(PORT, () => {
