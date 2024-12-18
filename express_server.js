@@ -1,13 +1,20 @@
 // express server
 const express = require("express");
-const app = express();
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 
+const app = express();
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieSession({ name: "session", keys: ["key1", "key2"] }));
+app.use(
+  cookieSession({
+    name: "session",
+    keys: [process.env.SESSION_KEY || "default_key1", "default_key2"], 
+    maxAge: 24 * 60 * 60 * 1000, 
+  })
+);
 
 
 const urlDatabase = {
@@ -19,7 +26,7 @@ const users = {
   aJ48lW: {
     id: "aJ48lW",
     email: "user@example.com",
-    password: bcrypt.hashSync("password", 10), 
+    password: bcrypt.hashSync("password", 10),
   },
 };
 
@@ -43,13 +50,20 @@ const findUserByEmail = (email) => {
   return null;
 };
 
-app.get("/urls", (req, res) => {
+
+const requireLogin = (req, res, next) => {
+  if (!req.session.user_id) {
+    return res.status(403).send("Please log in first.");
+  }
+  next();
+};
+
+
+app.get("/urls", requireLogin, (req, res) => {
   const userID = req.session.user_id;
-  if (!userID) return res.status(403).send("Please log in first.");
   const templateVars = { urls: urlsForUser(userID), user: users[userID] };
   res.render("urls_index", templateVars);
 });
-
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
@@ -88,9 +102,10 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Password is incorrect!");
   }
 
- req.session.user_id = user.id;
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
+
 
 app.post("/logout", (req, res) => {
   req.session = null;
@@ -98,10 +113,9 @@ app.post("/logout", (req, res) => {
 });
 
 
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:id", requireLogin, (req, res) => {
   const userID = req.session.user_id;
   const urlEntry = urlDatabase[req.params.id];
-  if (!userID) return res.status(403).send("Please log in first.");
   if (!urlEntry) return res.status(404).send("URL not found.");
   if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
   const templateVars = { id: req.params.id, longURL: urlEntry.longURL, user: users[userID] };
@@ -109,10 +123,9 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
-app.post("/urls/:id", (req, res) => {
+app.post("/urls/:id", requireLogin, (req, res) => {
   const userID = req.session.user_id;
   const urlEntry = urlDatabase[req.params.id];
-  if (!userID) return res.status(403).send("Please log in first.");
   if (!urlEntry) return res.status(404).send("URL not found.");
   if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
   urlEntry.longURL = req.body.longURL;
@@ -120,10 +133,9 @@ app.post("/urls/:id", (req, res) => {
 });
 
 
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/delete", requireLogin, (req, res) => {
   const userID = req.session.user_id;
   const urlEntry = urlDatabase[req.params.id];
-  if (!userID) return res.status(403).send("Please log in first.");
   if (!urlEntry) return res.status(404).send("URL not found.");
   if (urlEntry.userID !== userID) return res.status(403).send("You do not own this URL.");
   delete urlDatabase[req.params.id];
@@ -131,6 +143,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 
-app.listen(8080, () => {
-  console.log("Server listening on port 8080!");
+const PORT = 8080;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}!`);
 });
