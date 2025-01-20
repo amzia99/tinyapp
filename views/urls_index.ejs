@@ -25,7 +25,7 @@
           <% for (let id in urls) { %>
             <tr>
               <td><%= id %></td>
-              <td><%= urls[id] %></td>
+              <td><%= urls[id].longURL %></td>
               <td> <form method="POST" action="/urls/<%= id %>/delete">
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
@@ -34,7 +34,10 @@
           <% } %>
         </tbody>
       </table>
-      <a href="#">Create a New URL</a>
+      <a href="/urls/new" class="btn btn-primary">Create a New URL</a>
     </main>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
   </body>
 </html>
