@@ -10,7 +10,7 @@
       </li>
     </ul>
     <div>
-      <% if (username) { %>
+    <% if (typeof username !== 'undefined' && username) { %> 
   <span class="navbar-text text-white mr-3">Logged In As: <strong><%= username %></strong></span>
     <form action="/logout" method="POST" class="d-inline">
      <button type="submit" class="btn btn-danger btn-sm">Log Out</button>
