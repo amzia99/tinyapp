@@ -20,6 +20,10 @@ const urlDatabase = {
   i3BoGr: "http://www.google.com"
 };
 
+app.get('/', (req, res) => {
+  res.redirect('/urls'); // route root
+});
+
 // routes
 app.get('/urls', (req, res) => {
   const templateVars = {
