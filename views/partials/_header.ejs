@@ -1,14 +1,17 @@
 <header> class="navbar navbar-light bg-light mb-4"> 
   <div class="container">
   <% if (username) { %>
-    <p>Logged in as: <%= username %>!</p>
-    <form action="/logout" method="POST">
-      <button type="submit">Logout</button>
+    <span class="navbar-text"> 
+      Logged in as: <strong><%= username %></strong> 
+    </span>
+    <form action="/logout" method="POST" class="form-inline ml-2"> 
+      <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button> 
     </form>
   <% } else { %>
-    <form action="/login" method="POST">
-      <input type="text" name="username" placeholder="Enter Username">
-      <button type="submit">Login</button>
+    <form action="/login" method="POST" class="form-inline"> 
+      <input type="text" name="username" class="form-control mr-2" placeholder="Username"> 
+      <button type="submit" class="btn btn-outline-primary btn-sm">Login</button> <
     </form>
   <% } %>
+  </div>
 </header>
