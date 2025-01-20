@@ -1,4 +1,5 @@
-<header>
+<header> class="navbar navbar-light bg-light mb-4"> 
+  <div class="container">
   <% if (username) { %>
     <p>Logged in as: <%= username %>!</p>
     <form action="/logout" method="POST">
