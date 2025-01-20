@@ -4,6 +4,10 @@ const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080;
 
+// EJS view engine
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 // middleware
 app.use(
   cookieSession({
