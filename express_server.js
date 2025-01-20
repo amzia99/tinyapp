@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // mock url database
 const urlDatabase = {
   b6UTxQ: "http://www.lighthouselabs.ca",
-  i3BoGr: "http://www.google.com"
+  "i3BoGr": "http://www.google.com"
 };
 
 app.get('/', (req, res) => {
@@ -29,12 +29,12 @@ app.get('/', (req, res) => {
 });
 
 // routes
-app.get('/urls', (req, res) => {
-  const templateVars = {
-    username: req.session.username, // session used for username
-    urls: urlDatabase
+app.get("/urls", (req, res) => {
+  const templateVars = { 
+    urls: urlDatabase, 
+    username: req.session ? req.session.username : null // will default to null if undefined session
   };
-  res.render('urls_index', templateVars);
+  res.render("urls_index", templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
@@ -43,6 +43,14 @@ app.get('/urls/new', (req, res) => {
   };
   res.render('urls_new', templateVars);
 });
+
+app.get("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
+  const templateVars = { id, longURL };
+  res.render("urls_show", templateVars);
+});
+
 
 app.post('/login', (req, res) => {
   const username = req.body.username;
