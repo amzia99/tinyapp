@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <meta charset="UTF-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     />
     <title>Register</title>
-</head>
-<body>
-  <header>
-     <nav class="navbar navbar-dark bg-success">
-       <a class="navbar-brand" href="/urls">TinyApp</a>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <nav class="navbar navbar-dark bg-success">
+        <a class="navbar-brand" href="/urls">TinyApp</a>
       </nav>
     </header>
-   <main class="container">
-    <h3>Register</h3>
-     <form action="/register" method="POST">
+
+    <!-- Main Content -->
+    <main class="container mt-5">
+      <h3>Register</h3>
+      <form action="/register" method="POST">
+        <!-- Email Field -->
         <div class="form-group">
           <label for="email">Email:</label>
           <input
@@ -25,9 +29,12 @@
             id="email"
             name="email"
             class="form-control"
+            placeholder="Enter your email"
             required
           />
         </div>
+        
+        <!-- Password Field -->
         <div class="form-group">
           <label for="password">Password:</label>
           <input
@@ -35,11 +42,19 @@
             id="password"
             name="password"
             class="form-control"
+            placeholder="Enter your password"
             required
           />
         </div>
-        <button type="submit" class="btn btn-success">Register</button>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success btn-block">Register</button>
       </form>
+      
+      <!-- Login Link -->
+      <p class="mt-3">
+        Already have an account? <a href="/login">Log in here</a>.
+      </p>
     </main>
   </body>
 </html>

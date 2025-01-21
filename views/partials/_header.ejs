@@ -3,17 +3,17 @@
     <a href="/urls" class="navbar-brand text-white">TinyApp</a>
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-    <a href="/urls" class="nav-link text-white">My URLs</a>
-  </li>
-  <li class="nav-item">
-    <a href="/urls/new" class="nav-link text-white">Create New URL</a>
+        <a href="/urls" class="nav-link text-white">My URLs</a>
+      </li>
+      <li class="nav-item">
+        <a href="/urls/new" class="nav-link text-white">Create New URL</a>
       </li>
     </ul>
     <div>
-    <% if (typeof username !== 'undefined' && username) { %> 
-  <span class="navbar-text text-white mr-3">Logged In As: <strong><%= username %></strong></span>
-    <form action="/logout" method="POST" class="d-inline">
-     <button type="submit" class="btn btn-danger btn-sm">Log Out</button>
+      <% if (typeof user !== 'undefined' && user.email) { %>
+        <span class="navbar-text text-white mr-3">Logged In As: <strong><%= user.email %></strong></span>
+        <form action="/logout" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-danger btn-sm">Log Out</button>
         </form>
       <% } else { %>
         <a href="/login" class="btn btn-outline-light btn-sm mr-2">Login</a>

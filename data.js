@@ -1,5 +1,3 @@
-// data code
-// bcrypt for hashing user passwords
 const bcrypt = require("bcryptjs");
 
 // URL Database
@@ -17,18 +15,4 @@ const users = {
   },
 };
 
-// Function to filter URLs for a specific user
-const urlsForUser = (id) => {
-  const userURLs = {};
-  for (const urlID in urlDatabase) {
-    if (urlDatabase[urlID].userID === id) {
-      userURLs[urlID] = urlDatabase[urlID];
-    }
-  }
-  return userURLs;
-};
-
-module.exports = {urlDatabase,
-  users,
-  urlsForUser,
-};
+module.exports = { urlDatabase, users };
