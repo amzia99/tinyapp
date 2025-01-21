@@ -90,7 +90,7 @@ This project delivers a multi-page app with the following features:
 
 - **URL List Page:**  
   - Displays a table of URLs with:  
-    - Short URL, Long URL, Edit button (redirects to `/urls/:id`), and Delete button.  
+    - Short URL, Long URL, and Delete button.  
 
 ---
 
@@ -123,6 +123,7 @@ This project delivers a multi-page app with the following features:
 - Track visitor counts for short URLs
 - Implement unique visitor tracking
 - Display creation dates for URLs
+- Edit button
 
 
  ---
